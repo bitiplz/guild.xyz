@@ -1,0 +1,244 @@
+module.exports = {
+  webpack(config, options) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            icon: true,
+            replaceAttrValues: { "#fff": "currentColor" },
+          },
+        },
+      ],
+    })
+
+    /**
+     * Filtering packages which can't be used in the edge runtime, to avoid build
+     * warnings and errors
+     */
+    if (options.isServer && options.nextRuntime === "edge") {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@chakra-ui/anatomy": false,
+        "@chakra-ui/react": false,
+        "@chakra-ui/theme-tools": false,
+        "chakra-react-select": false,
+        "chakra-ui-steps": false,
+        stream: false,
+        "crypto-addr-codec": false,
+        "@ensdomains/address-encoder": false,
+        "decode-named-character-reference": false,
+        isows: false,
+      }
+    }
+
+    return config
+  },
+  productionBrowserSourceMaps: true,
+  images: {
+    dangerouslyAllowSVG: true,
+    domains: [
+      "storageapi.fleek.co",
+      "ipfs.fleek.co",
+      "cdn.discordapp.com",
+      "guild-xyz.mypinata.cloud",
+      "assets.poap.xyz",
+      "pbs.twimg.com",
+      "abs.twimg.com",
+      "localhost",
+      "guild.xyz",
+      "s3.us-west-2.amazonaws.com",
+      "www.notion.so",
+      "discord.com",
+      "img.evbuc.com",
+      "images.lumacdn.com",
+      "og.link3.to",
+    ],
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  experimental: {
+    scrollRestoration: true,
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/",
+          has: [
+            {
+              type: "host",
+              value: "balancy.guild.xyz",
+            },
+          ],
+          destination: "/balancy/",
+        },
+        {
+          source: "/",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/",
+        },
+        {
+          source: "/arc",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          // Redirecting to the "home page", because we had an incorrect QR code on the packaging
+          destination: "/lego",
+        },
+        {
+          source: "/light",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/LightGuildEmpireAssembly.pdf",
+        },
+        {
+          source: "/dark",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/DarkGuildEmpireAssembly.pdf",
+        },
+        {
+          source: "/castle",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/GuildCastleAssembly.pdf",
+        },
+        {
+          source: "/dude",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/GuildDudeAssembly.pdf",
+        },
+        {
+          source: "/fox",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/GuildFoxAssembly.pdf",
+        },
+        {
+          source: "/ghost",
+          has: [
+            {
+              type: "host",
+              value: "lego.guild.xyz",
+            },
+          ],
+          destination: "/lego/GuildGhostAssembly.pdf",
+        },
+      ],
+      afterFiles: [
+        {
+          source: "/js/script.js",
+          destination: "https://stat.zgen.hu/js/plausible.exclusions.js",
+        },
+        {
+          source: "/api/event",
+          destination: "https://stat.zgen.hu/api/event",
+        },
+        {
+          source: "/sitemap.xml",
+          destination: "/api/sitemap.xml",
+        },
+        {
+          source: "/api/posthog/:path*",
+          destination: "https://app.posthog.com/:path*",
+        },
+      ],
+    }
+  },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/explorer",
+        permanent: false,
+        has: [
+          {
+            type: "host",
+            value: "guild.xyz",
+          },
+        ],
+      },
+      {
+        source: "/community",
+        destination:
+          "https://help.guild.xyz/en/collections/3826818-our-guild-the-community",
+        permanent: false,
+      },
+      {
+        source: "/developer-meetup-202216:31",
+        destination: "/developer-meetup-2022",
+        permanent: true,
+      },
+      {
+        source: "/guild/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
+      {
+        source: "/protein-community/:path*",
+        destination: "/protein/:path*",
+        permanent: false,
+      },
+      {
+        source: "/courtside/:path*",
+        destination: "/the-krause-house/:path*",
+        permanent: false,
+      },
+      {
+        source: "/club-level/:path*",
+        destination: "/the-krause-house/:path*",
+        permanent: false,
+      },
+      {
+        source: "/upper-level/:path*",
+        destination: "/the-krause-house/:path*",
+        permanent: false,
+      },
+      {
+        source: "/ticketholder/:path*",
+        destination: "/the-krause-house/:path*",
+        permanent: false,
+      },
+      {
+        source: "/entr-hodlers/:path*",
+        destination: "/enter-dao/:path*",
+        permanent: false,
+      },
+      {
+        source: "/sharded-minds/:path*",
+        destination: "/enter-dao/:path*",
+        permanent: false,
+      },
+    ]
+  },
+}

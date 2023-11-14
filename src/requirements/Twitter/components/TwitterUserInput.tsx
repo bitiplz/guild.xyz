@@ -1,0 +1,71 @@
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Img,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  SkeletonCircle,
+} from "@chakra-ui/react"
+import useDebouncedState from "hooks/useDebouncedState"
+import { useController, useFormState } from "react-hook-form"
+import { RequirementFormProps } from "requirements"
+import useSWRImmutable from "swr/immutable"
+import parseFromObject from "utils/parseFromObject"
+import { TWITTER_HANDLE_REGEX } from "../TwitterRequirement"
+
+const TwitterUserInput = ({ baseFieldPath }: RequirementFormProps) => {
+  const { errors } = useFormState()
+
+  const { field } = useController({
+    name: `${baseFieldPath}.data.id`,
+    rules: {
+      required: "This field is required",
+    },
+  })
+
+  const debouncedUsername = useDebouncedState(field.value)
+
+  const { data: twitterAvatar, isValidating } = useSWRImmutable(
+    debouncedUsername && TWITTER_HANDLE_REGEX.test(debouncedUsername)
+      ? `/v2/third-party/twitter/users/${debouncedUsername}/avatar`
+      : null
+  )
+
+  return (
+    <FormControl
+      isInvalid={!!parseFromObject(errors, baseFieldPath)?.data?.id?.message}
+    >
+      <FormLabel>Username</FormLabel>
+
+      <HStack>
+        <InputGroup>
+          <InputLeftElement>@</InputLeftElement>
+          <Input {...field} pl={7} />
+        </InputGroup>
+        {debouncedUsername?.length > 0 && (
+          <SkeletonCircle
+            boxSize={10}
+            flexShrink={0}
+            border="1px solid var(--chakra-colors-whiteAlpha-300)"
+            overflow="hidden"
+            isLoaded={!isValidating}
+          >
+            <Img
+              src={twitterAvatar ?? "/default_twitter_icon.png"}
+              alt="Twitter avatar"
+              boxSize={10}
+            />
+          </SkeletonCircle>
+        )}
+      </HStack>
+      <FormErrorMessage>
+        {parseFromObject(errors, baseFieldPath)?.data?.id?.message}
+      </FormErrorMessage>
+    </FormControl>
+  )
+}
+
+export default TwitterUserInput
