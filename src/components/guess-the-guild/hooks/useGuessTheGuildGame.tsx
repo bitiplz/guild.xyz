@@ -1,6 +1,7 @@
 import { useState } from "react"
 import getRandomInt from "utils/getRandomInt"
 import { GDG_DIFFICULITY, GDG_MODE, GDG_STATUS, OPTIONS_COUNT } from "../constants"
+import useLocalStoragePersistState from "./useLocalStoragePersistState"
 
 export const BACH_SIZE_BY_DIFFICULITY = {
   [GDG_DIFFICULITY.EASY]: 100,
@@ -20,20 +21,18 @@ const shuffle = (arr = []) => arr.sort(() => 0.5 - Math.random())
 const randomGuilds = (guildsPool) => shuffle(guildsPool).slice(0, OPTIONS_COUNT)
 
 const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
-  const savedRecord = localStorage.getItem("guildxyz.guess-the-guild.record")
-  const savedDifficulity = localStorage.getItem(
-    "guildxyz.guess-the-guild.difficulity"
+  const [difficulity, setDifficulity] = useLocalStoragePersistState(
+    GDG_DIFFICULITY.EASY,
+    "guildxzy.guess-the-guild.difficulity"
+  )
+  const [record, setRecord] = useLocalStoragePersistState(
+    0,
+    "guildxzy.guess-the-guild.record"
   )
 
+  const [status, setStatus] = useState(GDG_STATUS.INIT)
   const [gameMode, setGameMode] = useState(randomGameMode())
-  const [difficulity, setDifficulity] = useState(
-    savedDifficulity || GDG_DIFFICULITY.EASY
-  )
-  const [status, setStatus] = useState(
-    savedDifficulity ? GDG_STATUS.QUESTION : GDG_STATUS.INIT
-  )
   const [score, setScore] = useState(0)
-  const [record, setRecord] = useState(savedRecord ? parseInt(savedRecord) : 0)
 
   //const batchSize = BACH_SIZE_BY_DIFFICULITY[difficulity]
   const guildsQueryResult = guildsInitial
@@ -53,7 +52,6 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
 
     if (newScore > record) {
       setRecord(newScore)
-      localStorage.setItem("guildxyz.guess-the-guild.record", `${newScore}`)
     }
 
     setOptions(randomGuilds(guildsPool))
@@ -64,11 +62,6 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     )
 
     setGameMode(randomGameMode())
-  }
-
-  const updateDifficulity = (value) => {
-    setDifficulity(value)
-    localStorage.setItem("guildxyz.guess-the-guild.difficulity", `${value}`)
   }
 
   const startGame = () => {
@@ -86,7 +79,7 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     score,
     record,
     difficulity,
-    onDifficulityChange: updateDifficulity,
+    onDifficulityChange: setDifficulity,
     startGame,
   }
 }
