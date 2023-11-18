@@ -46,14 +46,21 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
       : shuffle([...options])
   )
 
-  const onGuess = () => {
+  const isGuessCorrect = (guess) => score >= 10 // do the wrong answer branch
+
+  const updateScoreAndRecord = () => {
     const newScore = score + POINTS_BY_GAME_MODE[gameMode]
     setScore(newScore)
 
     if (newScore > record) {
       setRecord(newScore)
     }
+  }
 
+  const resetScore = () => setScore(0)
+
+  const nextRound = () => {
+    setStatus(GDG_STATUS.QUESTION)
     setOptions(randomGuilds(guildsPool))
     setQuestions(
       gameMode === GDG_MODE.GUESS
@@ -64,8 +71,14 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     setGameMode(randomGameMode())
   }
 
-  const startGame = () => {
-    setStatus(GDG_STATUS.QUESTION)
+  const onGuess = (guess) => {
+    if (isGuessCorrect(guess)) {
+      resetScore()
+    } else {
+      updateScoreAndRecord()
+    }
+
+    nextRound()
   }
 
   return {
@@ -80,7 +93,7 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     record,
     difficulity,
     onDifficulityChange: setDifficulity,
-    startGame,
+    startGame: nextRound,
   }
 }
 
