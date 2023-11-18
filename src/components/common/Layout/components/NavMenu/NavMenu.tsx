@@ -24,6 +24,7 @@ import {
   List,
   MagnifyingGlass,
   Plus,
+  Sword,
   TwitterLogo,
 } from "phosphor-react"
 import NavButton from "./components/NavButton"
@@ -86,6 +87,9 @@ const NavMenu = (): JSX.Element => {
               </NavButton>
               <NavButton leftIcon={<CircleWavyCheck />} href="/leaderboard">
                 Guild Pins leaderboard
+              </NavButton>
+              <NavButton leftIcon={<Sword />} href="/guess-the-guild">
+                Guess the Guild
               </NavButton>
             </NavGroup>
             <NavGroup title="Other">
