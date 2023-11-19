@@ -1,11 +1,10 @@
-import { Stack, Text, Wrap } from "@chakra-ui/react"
+import { Stack, Text } from "@chakra-ui/react"
 import Button from "components/common/Button"
 import Card from "components/common/Card"
-import GuildLogo from "components/common/GuildLogo"
-import GuildCard from "components/explorer/GuildCard"
-import { forwardRef } from "react"
 import { GuildBase } from "types"
 
+import GuessModeForm from "./GuessModeForm"
+import PairsModeForm from "./PairsModeForm"
 import SelectDiffuculity from "./SelectDifficulity"
 import StatusDisplay from "./StatusDisplay"
 
@@ -16,19 +15,37 @@ type Props = {
   guilds: GuildBase[]
 }
 
-const GuessTheGuildGame = forwardRef(({ guilds }: Props, ref: any) => {
+const GuessTheGuildGame = ({ guilds }: Props) => {
   const {
-    round: { questions, options, submit: onGuess },
+    round: {
+      questions,
+      options,
+      answers,
+      setAnswers,
+      submitDisabled,
+      submit: onGuess,
+    },
     gameMode,
     status,
     score,
     record,
     difficulity,
     onDifficulityChange,
-    startGame,
+    nextRound,
   } = useGuessTheGuildGame({ guildsInitial: guilds })
 
-  const isGuessMode = gameMode === GDG_MODE.GUESS
+  const isInGuessMode = gameMode === GDG_MODE.GUESS
+  const isInInitStatus = gameMode === GDG_STATUS.INIT
+  const isInQuestioneStatus = status === GDG_STATUS.QUESTION
+  const isInResultStatus = status === GDG_STATUS.RESULT
+
+  const GameDisplayComp = isInGuessMode ? GuessModeForm : PairsModeForm
+
+  const actionButtonProps = {
+    onClick: isInQuestioneStatus ? onGuess : nextRound,
+    label: isInQuestioneStatus ? "I'm sure" : "Next",
+    disabled: isInGuessMode && submitDisabled,
+  }
 
   return (
     <Stack w="full" alignItems="center">
@@ -37,10 +54,10 @@ const GuessTheGuildGame = forwardRef(({ guilds }: Props, ref: any) => {
         <Text fontSize="14">the most awesomest minigame</Text>
       </Card>
 
-      {status === GDG_STATUS.INIT ? (
+      {isInInitStatus ? (
         <Card w="full" maxW="md" p="4" borderRadius="xl" alignItems="center">
           <SelectDiffuculity value={difficulity} onChange={onDifficulityChange} />
-          <Button w="full" colorScheme="green" onClick={startGame}>
+          <Button w="full" colorScheme="green" onClick={nextRound}>
             Let's gooo!
           </Button>
         </Card>
@@ -53,43 +70,27 @@ const GuessTheGuildGame = forwardRef(({ guilds }: Props, ref: any) => {
             onDifficulityChange={onDifficulityChange}
           />
           <Card w="full" maxW="md" p="4" borderRadius="xl" alignItems="center">
-            {isGuessMode ? (
-              <>
-                <Text mb="4">Guess the guild by the logo</Text>
-                <GuildLogo size="28" imageUrl={options[0].imageUrl} />
-                <Text p="4">???</Text>
-                <Stack w="full" mb="4">
-                  {options.map((guild) => (
-                    <Button key={guild.id}>{guild.name}</Button>
-                  ))}
-                </Stack>
-              </>
-            ) : (
-              <>
-                <Text mb="4">Pair the logos to the guilds</Text>
-                <Wrap p="4" spacingX={4}>
-                  {options.map((guild) => (
-                    <GuildLogo key={guild.id} imageUrl={guild.imageUrl} />
-                  ))}
-                </Wrap>
-                <Stack w="full" mb="4">
-                  {options.map((guild) => (
-                    <GuildCard
-                      key={guild.id}
-                      guildData={{ ...guild, imageUrl: "" }}
-                    />
-                  ))}
-                </Stack>
-              </>
-            )}
-            <Button w="full" h="8" colorScheme="green" onClick={onGuess}>
-              I'm sure
+            <GameDisplayComp
+              showResults={isInResultStatus}
+              questions={questions}
+              options={options}
+              answers={answers}
+              setAnswers={setAnswers}
+            />
+            <Button
+              w="full"
+              h="8"
+              colorScheme="green"
+              onClick={actionButtonProps.onClick}
+              isDisabled={actionButtonProps.disabled}
+            >
+              {actionButtonProps.label}
             </Button>
           </Card>
         </>
       )}
     </Stack>
   )
-})
+}
 
 export default GuessTheGuildGame

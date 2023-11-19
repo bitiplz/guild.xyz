@@ -29,24 +29,26 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     0,
     "guildxzy.guess-the-guild.record"
   )
-
   const [status, setStatus] = useState(GDG_STATUS.INIT)
   const [gameMode, setGameMode] = useState(randomGameMode())
   const [score, setScore] = useState(0)
 
   //const batchSize = BACH_SIZE_BY_DIFFICULITY[difficulity]
   const guildsQueryResult = guildsInitial
-
   const guildsPool = guildsQueryResult.flat().filter(hasImage)
-
   const [options, setOptions] = useState(randomGuilds(guildsPool))
-  const [questions, setQuestions] = useState(
-    gameMode === GDG_MODE.GUESS
-      ? options[getRandomInt(options.length - 1)]
-      : shuffle([...options])
-  )
+  const [questions, setQuestions] = useState(shuffle([...options]))
+  const [answers, setAnswers] = useState(Array(OPTIONS_COUNT).fill(null))
 
-  const isGuessCorrect = (guess) => score >= 10 // do the wrong answer branch
+  const submitDisabled =
+    gameMode === GDG_MODE.GUESS
+      ? answers?.[0] === null
+      : answers.find((a) => a === null)
+
+  const isGuessCorrect = () =>
+    gameMode === GDG_MODE.GUESS
+      ? answers[0]?.id === questions[0].id
+      : answers.every((a, i) => a?.id === questions[i].id)
 
   const updateScoreAndRecord = () => {
     const newScore = score + POINTS_BY_GAME_MODE[gameMode]
@@ -61,30 +63,30 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
 
   const nextRound = () => {
     setStatus(GDG_STATUS.QUESTION)
-    setOptions(randomGuilds(guildsPool))
-    setQuestions(
-      gameMode === GDG_MODE.GUESS
-        ? options[getRandomInt(options.length)]
-        : shuffle([...options])
-    )
-
+    const newGuilds = randomGuilds(guildsPool)
+    setOptions(newGuilds)
+    setQuestions(shuffle([...newGuilds]))
+    setAnswers(Array(OPTIONS_COUNT).fill(null))
     setGameMode(randomGameMode())
   }
 
-  const onGuess = (guess) => {
-    if (isGuessCorrect(guess)) {
-      resetScore()
-    } else {
+  const onGuess = () => {
+    if (isGuessCorrect()) {
       updateScoreAndRecord()
+    } else {
+      resetScore()
     }
 
-    nextRound()
+    setStatus(GDG_STATUS.RESULT)
   }
 
   return {
     round: {
       questions,
       options,
+      answers,
+      setAnswers,
+      submitDisabled,
       submit: onGuess,
     },
     gameMode,
@@ -93,7 +95,7 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     record,
     difficulity,
     onDifficulityChange: setDifficulity,
-    startGame: nextRound,
+    nextRound,
   }
 }
 
