@@ -35,7 +35,7 @@ const GuessTheGuildGame = ({ guilds }: Props) => {
   } = useGuessTheGuildGame({ guildsInitial: guilds })
 
   const isInGuessMode = gameMode === GDG_MODE.GUESS
-  const isInInitStatus = gameMode === GDG_STATUS.INIT
+  const isInInitStatus = status === GDG_STATUS.INIT
   const isInQuestioneStatus = status === GDG_STATUS.QUESTION
   const isInResultStatus = status === GDG_STATUS.RESULT
 

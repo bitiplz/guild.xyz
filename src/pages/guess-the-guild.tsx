@@ -1,4 +1,4 @@
-import { Center, useBreakpointValue, useColorModeValue } from "@chakra-ui/react"
+import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react"
 import ClientOnly from "components/common/ClientOnly"
 import Layout from "components/common/Layout"
 import GuessTheGuildGame from "components/guess-the-guild/GuessTheGuildGame"
@@ -40,9 +40,7 @@ const Page = ({ guilds }: Props): JSX.Element => {
       textColor="white"
     >
       <ClientOnly>
-        <Center>
-          <GuessTheGuildGame guilds={guilds} />
-        </Center>
+        <GuessTheGuildGame guilds={guilds} />
       </ClientOnly>
     </Layout>
   )

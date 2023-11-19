@@ -46,7 +46,11 @@ const PairsModeForm = ({
     }
   }
 
-  const removeAnswer = (idx) => updateAnswers(idx, null)
+  const removeAnswer = (idx) => {
+    if (!showResults){
+      updateAnswers(idx, null)
+    }
+  }
 
   const answerUsed = (guild) =>
     Boolean(answers.find((answer) => answer?.id === guild.id))
@@ -76,14 +80,17 @@ const PairsModeForm = ({
             as={Card}
             key={guild.id}
             onClick={() => removeAnswer(i)}
-            isDisabled={!answers[i]}
+            isDisabled={showResults || !answers[i]}
             colorScheme={getBtnColor(i)}
             h="auto"
             px={{ base: 5, md: 6 }}
             py={{ base: 6, md: 7 }}
           >
             <GuildCardLayout
-              guildData={{ ...guild, imageUrl: answers[i]?.imageUrl || "" }}
+              guildData={{
+                ...guild,
+                imageUrl: showResults ? guild.imageUrl : answers[i]?.imageUrl || "",
+              }}
             />
           </Button>
         ))}
