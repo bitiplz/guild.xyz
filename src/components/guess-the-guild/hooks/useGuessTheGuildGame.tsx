@@ -1,15 +1,17 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import getRandomInt from "utils/getRandomInt"
 import { GDG_DIFFICULITY, GDG_MODE, GDG_STATUS, OPTIONS_COUNT } from "../constants"
 import useLocalStoragePersistState from "./useLocalStoragePersistState"
 
-export const BACH_SIZE_BY_DIFFICULITY = {
+import fetcher from "utils/fetcher"
+
+const BACH_SIZE_BY_DIFFICULITY = {
   [GDG_DIFFICULITY.EASY]: 100,
   [GDG_DIFFICULITY.MEDIUM]: 500,
   [GDG_DIFFICULITY.HARD]: 1000,
 }
 
-export const POINTS_BY_GAME_MODE = {
+const POINTS_BY_GAME_MODE = {
   [GDG_MODE.GUESS]: 1,
   [GDG_MODE.PAIRS]: 2,
 }
@@ -20,7 +22,9 @@ const randomGameMode = () =>
 const shuffle = (arr = []) => arr.sort(() => 0.5 - Math.random())
 const randomGuilds = (guildsPool) => shuffle(guildsPool).slice(0, OPTIONS_COUNT)
 
-const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
+const useGuessTheGuildGame = ({ guilds: guildsInitial = [] }) => {
+  const [fetchedGuilds, setFetchedGuilds] = useState(guildsInitial)
+
   const [difficulity, setDifficulity] = useLocalStoragePersistState(
     GDG_DIFFICULITY.EASY,
     "guildxzy.guess-the-guild.difficulity"
@@ -29,13 +33,25 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
     0,
     "guildxzy.guess-the-guild.record"
   )
+
+  useEffect(() => {
+    ;(async () => {
+      const guilds = await fetcher(`/v2/guilds?sort=members&limit=1000`).catch(
+        (_) => []
+      )
+      setFetchedGuilds(guilds)
+    })()
+  }, [])
+
   const [status, setStatus] = useState(GDG_STATUS.INIT)
   const [gameMode, setGameMode] = useState(randomGameMode())
   const [score, setScore] = useState(0)
 
-  //const batchSize = BACH_SIZE_BY_DIFFICULITY[difficulity]
-  const guildsQueryResult = guildsInitial
-  const guildsPool = guildsQueryResult.flat().filter(hasImage)
+  const guildsPool = fetchedGuilds
+    .flat()
+    .slice(0, BACH_SIZE_BY_DIFFICULITY[difficulity])
+    .filter(hasImage)
+
   const [options, setOptions] = useState(randomGuilds(guildsPool))
   const [questions, setQuestions] = useState(shuffle([...options]))
   const [answers, setAnswers] = useState(Array(OPTIONS_COUNT).fill(null))
