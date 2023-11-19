@@ -43,7 +43,7 @@ const useGuessTheGuildGame = ({ guildsInitial = [] }) => {
   const submitDisabled =
     gameMode === GDG_MODE.GUESS
       ? answers?.[0] === null
-      : answers.find((a) => a === null)
+      : answers.findIndex((a) => a === null) !== -1
 
   const isGuessCorrect = () =>
     gameMode === GDG_MODE.GUESS

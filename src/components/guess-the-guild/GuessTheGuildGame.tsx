@@ -44,7 +44,7 @@ const GuessTheGuildGame = ({ guilds }: Props) => {
   const actionButtonProps = {
     onClick: isInQuestioneStatus ? onGuess : nextRound,
     label: isInQuestioneStatus ? "I'm sure" : "Next",
-    disabled: isInGuessMode && submitDisabled,
+    disabled: isInQuestioneStatus && submitDisabled,
   }
 
   return (
