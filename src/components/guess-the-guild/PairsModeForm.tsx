@@ -47,7 +47,7 @@ const PairsModeForm = ({
   }
 
   const removeAnswer = (idx) => {
-    if (!showResults){
+    if (!showResults) {
       updateAnswers(idx, null)
     }
   }
@@ -58,10 +58,10 @@ const PairsModeForm = ({
   return (
     <>
       <Text>Pair the logos to the guilds</Text>
-      <Text mb="4" fontSize={14} colorScheme="gray">
+      <Text mb="7" fontSize={14} colorScheme="gray">
         ( just click them in order )
       </Text>
-      <Wrap p="4" spacingX={4}>
+      <Wrap mb="7" spacingX={2}>
         {options.map((guild) => (
           <Button
             key={guild.id}

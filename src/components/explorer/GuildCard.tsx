@@ -28,6 +28,7 @@ const GuildCardLayout = ({ guildData }: Props): JSX.Element => (
     templateColumns={image ? "3rem calc(100% - 5.25rem)" : "1fr"}
     gap={4}
     alignItems="center"
+    w="full"
   >
     {image && <GuildLogo imageUrl={guildData.imageUrl} />}
     <VStack spacing={2} alignItems="start" w="full" maxW="full" mb="0.5" mt="-1">
