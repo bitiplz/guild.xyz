@@ -1,5 +1,8 @@
 import { useState } from "react"
 
+/*
+  impr: its very basic, just wanted to show extracting functionality here.
+*/
 const useLocalStoragePersistState = (value, path) => {
   const [state, setState] = useState(JSON.parse(localStorage.getItem(path)) || value)
 
