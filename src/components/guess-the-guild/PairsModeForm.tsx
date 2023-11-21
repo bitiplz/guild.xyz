@@ -61,12 +61,13 @@ const PairsModeForm = ({
       <Text mb="7" fontSize={14} colorScheme="gray">
         ( just click them in order )
       </Text>
+
       <Wrap mb="7" spacingX={2}>
         {options.map((guild) => (
           <Button
-            key={guild.id}
             py="2"
             h="auto"
+            key={guild.id}
             onClick={() => updateNextAnswer(guild)}
             isDisabled={answerUsed(guild)}
           >
@@ -74,26 +75,29 @@ const PairsModeForm = ({
           </Button>
         ))}
       </Wrap>
+
       <Stack w="full" mb="4">
-        {questions.map((guild, i) => (
-          <Button
-            as={Card}
-            key={guild.id}
-            onClick={() => removeAnswer(i)}
-            isDisabled={showResults || !answers[i]}
-            colorScheme={getBtnColor(i)}
-            h="auto"
-            px={{ base: 5, md: 6 }}
-            py={{ base: 6, md: 7 }}
-          >
-            <GuildCardLayout
-              guildData={{
-                ...guild,
-                imageUrl: showResults ? guild.imageUrl : answers[i]?.imageUrl || "",
-              }}
-            />
-          </Button>
-        ))}
+        {questions.map((guild, i) => {
+          const displayImageUrl = showResults
+            ? guild.imageUrl
+            : answers[i]?.imageUrl || ""
+          const displayGuildData = { ...guild, imageUrl: displayImageUrl }
+
+          return (
+            <Button
+              as={Card}
+              key={guild.id}
+              onClick={() => removeAnswer(i)}
+              isDisabled={showResults || !answers[i]}
+              colorScheme={getBtnColor(i)}
+              h="auto"
+              px={{ base: 5, md: 6 }}
+              py={{ base: 6, md: 7 }}
+            >
+              <GuildCardLayout guildData={displayGuildData} />
+            </Button>
+          )
+        })}
       </Stack>
     </>
   )

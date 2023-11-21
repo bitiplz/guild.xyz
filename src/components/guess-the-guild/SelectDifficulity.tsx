@@ -9,63 +9,47 @@ type Props = {
   small?: boolean
 }
 
-const SelectDiffuculity = ({ value, onChange, small }: Props) => {
-  if (small) {
-    return (
-      <ButtonGroup isAttached>
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.EASY ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.EASY)}
-        >
-          👶
-        </Button>
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.MEDIUM ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.MEDIUM)}
-        >
-          🙂
-        </Button>
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.HARD ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.HARD)}
-        >
-          💀
-        </Button>
-      </ButtonGroup>
-    )
-  }
+const OPTIONS = [
+  {
+    value: GDG_DIFFICULITY.EASY,
+    label: "EZPZ",
+    symbol: `👶`,
+  },
+  {
+    value: GDG_DIFFICULITY.MEDIUM,
+    label: "What do you mean, casual?",
+    symbol: `🙂`,
+  },
+  {
+    value: GDG_DIFFICULITY.HARD,
+    label: "IDDQD",
+    symbol: `💀`,
+  },
+]
+
+const SelectDiffuculity = ({ value: selected, onChange, small }: Props) => {
+  const Container = small ? ButtonGroup : Stack
+  const continerProps = small ? { isAttached: true } : { w: "full", p: "4" }
 
   return (
     <>
-      <Text mb="2" align="center">
-        How hard do you like it? <br />( be honest! )
-      </Text>
-      <Stack w="full" p="4">
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.EASY ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.EASY)}
-        >
-          EZPZ 👶
-        </Button>
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.MEDIUM ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.MEDIUM)}
-        >
-          What do you mean, casual? 🙂
-        </Button>
-        <Button
-          size="sm"
-          colorScheme={value === GDG_DIFFICULITY.HARD ? "blue" : undefined}
-          onClick={() => onChange(GDG_DIFFICULITY.HARD)}
-        >
-          IDDQD 💀
-        </Button>
-      </Stack>
+      {small ? null : (
+        <Text mb="2" align="center">
+          How hard do you like it? <br />( be honest! )
+        </Text>
+      )}
+      <Container {...continerProps}>
+        {OPTIONS.map(({ value, label, symbol }) => (
+          <Button
+            size="sm"
+            key={value}
+            colorScheme={selected === value && "blue"}
+            onClick={() => onChange(value)}
+          >
+            {`${small ? "" : label} ${symbol}`}
+          </Button>
+        ))}
+      </Container>
     </>
   )
 }
