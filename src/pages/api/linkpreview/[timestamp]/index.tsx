@@ -11,6 +11,7 @@ export const config = {
   ],
 }
 
+/*
 const interFont = fetch(
   new URL("../../../../../public/fonts/Inter-Regular.woff", import.meta.url)
 ).then((res) => res.arrayBuffer())
@@ -20,18 +21,21 @@ const interBoldFont = fetch(
 const dystopianFont = fetch(
   new URL("../../../../../public/fonts/Dystopian-Black.woff", import.meta.url)
 ).then((res) => res.arrayBuffer())
+*/
 
 const handler = async (req, _) => {
   const { protocol, host } = req.nextUrl
   const baseUrl = `${protocol}//${host}`
 
   try {
-    const [guilds, interFontData, interBoldFontData, dystopianFontData] =
+    const [guilds /*, interFontData, interBoldFontData, dystopianFontData*/] =
       await Promise.all([
         fetcher(`/v2/guilds`).catch((_) => []),
+        /*
         interFont,
         interBoldFont,
         dystopianFont,
+        */
       ])
 
     return new ImageResponse(
@@ -160,6 +164,7 @@ const handler = async (req, _) => {
       {
         width: 800,
         height: 450,
+        /*
         fonts: [
           {
             name: "Inter",
@@ -179,6 +184,7 @@ const handler = async (req, _) => {
             style: "normal",
           },
         ],
+        */
       }
     )
   } catch (e: any) {

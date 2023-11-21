@@ -11,6 +11,7 @@ export const config = {
   ],
 }
 
+/*
 const interFont = fetch(
   new URL("../../../../../public/fonts/Inter-Regular.woff", import.meta.url)
 ).then((res) => res.arrayBuffer())
@@ -20,6 +21,7 @@ const interBoldFont = fetch(
 const dystopianFont = fetch(
   new URL("../../../../../public/fonts/Dystopian-Black.woff", import.meta.url)
 ).then((res) => res.arrayBuffer())
+*/
 
 const handler = async (req, _) => {
   const { protocol, host } = req.nextUrl
@@ -41,11 +43,13 @@ const handler = async (req, _) => {
   if (!guild?.id) return new ImageResponse(<></>, { status: 404 })
 
   try {
+    /*
     const [interFontData, interBoldFontData, dystopianFontData] = await Promise.all([
       interFont,
       interBoldFont,
       dystopianFont,
     ])
+    */
 
     const roles = guildRoles?.map((role) => role.name)
 
@@ -250,6 +254,7 @@ const handler = async (req, _) => {
       {
         width: 800,
         height: 450,
+        /*
         fonts: [
           {
             name: "Inter",
@@ -269,6 +274,7 @@ const handler = async (req, _) => {
             style: "normal",
           },
         ],
+        */
       }
     )
   } catch (e: any) {}
