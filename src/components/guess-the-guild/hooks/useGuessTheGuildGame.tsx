@@ -1,9 +1,8 @@
+import useLocalStorage from "hooks/useLocalStorage"
 import { useEffect, useState } from "react"
+import fetcher from "utils/fetcher"
 import getRandomInt from "utils/getRandomInt"
 import { GDG_DIFFICULITY, GDG_MODE, GDG_STATUS, OPTIONS_COUNT } from "../constants"
-import useLocalStoragePersistState from "./useLocalStoragePersistState"
-
-import fetcher from "utils/fetcher"
 
 const BACH_SIZE_BY_DIFFICULITY = {
   [GDG_DIFFICULITY.EASY]: 100,
@@ -29,14 +28,11 @@ const randomGuilds = (guildsPool) => shuffle(guildsPool).slice(0, OPTIONS_COUNT)
 const useGuessTheGuildGame = ({ guilds: guildsInitial = [] }) => {
   const [fetchedGuilds, setFetchedGuilds] = useState(guildsInitial)
 
-  const [difficulity, setDifficulity] = useLocalStoragePersistState(
-    GDG_DIFFICULITY.EASY,
-    "guildxzy.guess-the-guild.difficulity"
+  const [difficulity, setDifficulity] = useLocalStorage(
+    "guildxzy.guess-the-guild.difficulity",
+    GDG_DIFFICULITY.EASY
   )
-  const [record, setRecord] = useLocalStoragePersistState(
-    0,
-    "guildxzy.guess-the-guild.record"
-  )
+  const [record, setRecord] = useLocalStorage("guildxzy.guess-the-guild.record", 0)
 
   /*
     impr: could be fetched on the fly, part by part upon difficulity change,
