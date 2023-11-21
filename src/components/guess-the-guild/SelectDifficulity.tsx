@@ -43,7 +43,7 @@ const SelectDiffuculity = ({ value: selected, onChange, small }: Props) => {
           <Button
             size="sm"
             key={value}
-            colorScheme={selected === value && "blue"}
+            colorScheme={selected === value ? "blue" : undefined}
             onClick={() => onChange(value)}
           >
             {`${small ? "" : label} ${symbol}`}
